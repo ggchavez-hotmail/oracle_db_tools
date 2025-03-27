@@ -1,0 +1,24 @@
+FROM oraclelinux:9
+
+RUN yum install -y \
+    libaio 
+
+WORKDIR /opt/oracle
+
+COPY oracle .
+
+RUN sh -c "echo /opt/oracle/instantclient_23_7 > \
+    /etc/ld.so.conf.d/oracle-instantclient.conf" && \
+    ldconfig
+
+ENV ORACLE_BASE=/opt/oracle
+ENV ORACLE_HOME=${ORACLE_BASE}/instantclient_23_7
+ENV PATH=$ORACLE_HOME:$PATH
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME 
+ENV TNS_ADMIN=${ORACLE_HOME}/network/admin
+
+WORKDIR /home/testhost
+
+COPY test .
+
+CMD [ "sh", "test-host.sh"]

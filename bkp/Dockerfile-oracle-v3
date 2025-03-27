@@ -1,0 +1,26 @@
+FROM oraclelinux:9
+
+RUN yum install -y \
+    libaio \
+    unzip
+
+WORKDIR /opt/oracle
+
+RUN curl -o oracleclient.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basic-linux.x64-23.7.0.25.01.zip && \
+    curl -o sqlplus.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip && \
+    unzip oracleclient.zip && \
+    unzip -n sqlplus.zip && \
+    sh -c "echo /opt/oracle/instantclient_23_7 > \
+    /etc/ld.so.conf.d/oracle-instantclient.conf" && \
+    ldconfig
+    
+COPY bin/ ./instantclient_23_7/
+COPY network/ ./instantclient_23_7/network
+
+ENV ORACLE_BASE=/opt/oracle
+ENV ORACLE_HOME=${ORACLE_BASE}/instantclient_23_7
+ENV PATH=$ORACLE_HOME:$PATH
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME 
+ENV TNS_ADMIN=${ORACLE_HOME}/network/admin
+
+CMD [ "tail", "-f", "/dev/null"]

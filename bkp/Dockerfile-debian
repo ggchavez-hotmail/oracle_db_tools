@@ -1,0 +1,31 @@
+FROM debian:stable-slim
+
+#se debe instalar libaio1, en otros sistemas operativos es libaio nada mas
+RUN apt update -y && \
+    apt install -y \
+    libaio1
+
+WORKDIR /opt/oracle
+
+COPY oracle .
+
+#comando necesario para habilitar los archivos copiados
+RUN sh -c "echo /opt/oracle/instantclient_23_7 > \
+    /etc/ld.so.conf.d/oracle-instantclient.conf" && \
+    ldconfig
+
+ENV ORACLE_BASE=/opt/oracle
+ENV ORACLE_HOME=${ORACLE_BASE}/instantclient_23_7
+ENV PATH=$ORACLE_HOME:$PATH
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME 
+ENV TNS_ADMIN=${ORACLE_HOME}/network/admin
+
+WORKDIR /home/proceso
+
+COPY proceso .
+
+# Definir el nombre del servicio Oracle a testear
+ENV LISTA_HOST=HOST:PUERTO/INSTANCIA
+ENV TIEMPO_PAUSA="1"
+
+CMD [ "sh", "test-host.sh"]

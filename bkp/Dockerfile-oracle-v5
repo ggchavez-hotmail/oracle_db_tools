@@ -1,0 +1,17 @@
+FROM oraclelinux:9
+RUN dnf install -y oracle-instantclient-release-23ai-el9 && \
+    dnf install -y oracle-instantclient-basic 
+
+WORKDIR /usr/lib/oracle/23/client64
+
+COPY oracle/instantclient_23_7/network ./network
+
+COPY oracle/instantclient_23_7/tnsping ./bin/tnsping
+
+ENV ORACLE_BASE=/usr/lib/oracle/23/client64
+ENV ORACLE_HOME=${ORACLE_BASE}
+ENV PATH=$ORACLE_HOME/bin:$PATH
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME 
+ENV TNS_ADMIN=${ORACLE_HOME}/network/admin
+
+CMD [ "tail", "-f", "/dev/null"]

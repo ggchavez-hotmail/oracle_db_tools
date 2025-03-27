@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oracle-tools-service-deployment
+  namespace: objetivo #Modificar por el que sea necesario
+  labels:
+    app: oracle-tools-service
+spec:
+  replicas: 1
+  strategy: {}
+  selector:
+    matchLabels:
+      app: oracle-tools-service
+  template:
+    metadata:
+      labels:
+        app: oracle-tools-service
+    spec:
+      containers:
+        - name: oracle-tools-service
+          image: ggchavezhotmail/oracle_db_tools:debian-slim-v1
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "10m"    
+            limits:
+              memory: "512Mi"
+              cpu: "500m" 
+          env:
+            - name: TZ
+              value: America/Santiago
+            - name: LISTA_HOST
+              value: "HOST1:PUERTO/INSTANCIA HOST2:PUERTO/INSTANCIA" #lista de hosts separados por espacio
+            - name: TIEMPO_PAUSA
+              value: "5" #tiempo de espera entre comprobaciones de la lista de host

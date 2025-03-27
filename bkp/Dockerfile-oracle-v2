@@ -1,0 +1,7 @@
+FROM oraclelinux:9
+RUN dnf install -y oracle-instantclient-release-23ai-el9 && \
+    dnf install -y oracle-instantclient-basic && \
+    dnf install -y oracle-instantclient-sqlplus && \
+    dnf install -y oracle-instantclient-tools
+
+CMD [ "tail", "-f", "/dev/null"]
