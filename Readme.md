@@ -1,34 +1,58 @@
 # Objetivo General #
-Generar una imagen Docker con las herramientas necesarias para conexión y pruebas a base de datos Oracle.
+
+Construir una imagen Docker que incluya todas las herramientas necesarias para realizar pruebas de conexión y medir el tiempo de respuesta a una base de datos Oracle.
+
+---
 
 # Objetivo Principal #
-Verificar tiempo de respuesta de conexion a base de datos Oracle mediante herramienta TNSPING.
 
-## Metodo trabajo ##
+Verificar el tiempo de respuesta de la conexión a una base de datos Oracle utilizando la herramienta TNSPING.
 
-### Obtener herramientas necesarias ###
-Para conseguir el objetivo principal, se instala el instant client de oracle version 23.7 + SQLPLUS.
-Esta versión de SQLPLUS posee comando PING el cual puede ser utilizado para el objetivo principal, pero posee una gran desventaja ya que debemos que conectarnos a la base de datos para ejecutar el comando.
+---
 
-https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html
+# Metodología #
 
-Por otra parte entre las herramientas de instant client no se encuentra el TSNPING, por lo que se tuvo que extraer de la imagen gratuita de base de datos esta herramienta, mas carpetas necesarias para que funcione.
+### 1. Instalación de Herramientas ##
 
-Docker Image: container-registry.oracle.com/database/free:latest
+Para alcanzar el objetivo principal, se instala el **Oracle Instant Client** versión 23.7 junto con **SQL*Plus**. Esta versión de SQL*Plus incluye el comando `PING`, que permite realizar pruebas de conectividad. Sin embargo, presenta la desventaja de requerir conexión a la base de datos para ejecutar el comando.
 
-Ver carpeta "oracle", se pueden incluir mas herramientas pero la imagen llega a pesar alrededor de 1.5GB, evaluando las opciones solo se deja instant client lite + tnsping.
+Más información y descargas en:  
+[Oracle Instant Client Downloads](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html)
 
-### Automatizar consulta de host ###
-Para automatizar comando TNSPING a distintos HOST, se genera una shell que toma la lista de host informadas en variable LISTA_HOST, se espera string con formato HOST:PUERTO/INSTANCIA, para enviar mas de un host separar con espacio la lista. Adicionalmente se incluye atributo TIEMPO_ESPERA para que luego de recorrer la lista de HOST se espere un tiempo X.
+Dado que el Instant Client no incluye la herramienta **TNSPING**, se extrajo de la imagen gratuita de base de datos de Oracle, junto con las carpetas necesarias para su funcionamiento.
 
-Ver carpeta "proceso".
+- **Imagen Docker utilizada:** `container-registry.oracle.com/database/free:latest`
 
-### Opcion uso desde Kubernetes ###
-Se genera un script para desplegar en un cluster de kubernetes, con el objetivo de medir el tiempo de respuesta de las conexiones.
+Dentro de la carpeta `oracle` se pueden encontrar el detalla de los archivos utilizados. Tras evaluar distintas opciones y considerando el tamaño final de la imagen (alrededor de 1.5GB), se optó por incluir únicamente el **Instant Client Lite** y **TNSPING**.
 
-Ver carpeta "k8s".
+---
+
+### 2. Automatización de la Consulta de Hosts ###
+
+Se creó un script shell que automatiza la ejecución del comando **TNSPING** para múltiples hosts.  
+- La lista de hosts se define en la variable `LISTA_HOST` con el formato `HOST:PUERTO/INSTANCIA`.
+- Para incluir más de un host, se deben separar con espacios.  
+- Además, se incluye un parámetro `TIEMPO_ESPERA` que especifica el tiempo de espera una vez que se ha recorrido la lista de hosts.
+
+Consulta el contenido en la carpeta `proceso`.
+
+---
+
+### 3. Uso desde Kubernetes ###
+
+Se ha desarrollado un script para desplegar la solución en un clúster de Kubernetes. Esto permite medir el tiempo de respuesta de las conexiones en un entorno distribuido y escalable.
+
+Consulta la carpeta `k8s` para más detalles.
+
+---
 
 ## Imagen Docker ##
-Para generar la imagen docker se hizo pruebas con distintas distros linux persiguiendo la imagen mas liviana, se opto por debian-slim-stable, igualmente se dejan las distintas pruebas realizadas y otros enfoques para lograr.
 
-Ver carpeta "bkp".
+Se realizaron pruebas con diversas distribuciones Linux buscando obtener una imagen lo más liviana posible. Se optó por utilizar **debian-slim-stable**.  
+En la carpeta `bkp` se encuentran los diferentes enfoques y pruebas realizadas durante el desarrollo.
+
+---
+
+Esta documentación resume el proceso para construir y utilizar la imagen Docker destinada a la conexión y pruebas a base de datos Oracle. Si tienes alguna duda o sugerencia, por favor abre un issue o envía un pull request.
+
+---
