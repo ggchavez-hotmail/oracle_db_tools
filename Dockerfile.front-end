@@ -1,0 +1,24 @@
+#Ejemplo para generar imagen docker para levantar lectura de archivo log.
+FROM python:3.11-slim
+
+WORKDIR /home/proceso
+
+COPY proceso/app/requirements.txt ./app/requirements.txt
+
+RUN pip install --no-cache-dir -r app/requirements.txt 
+
+# Exponer el puerto usado por Streamlit
+EXPOSE 8502
+
+ENV LOG_FILE=/var/log/proceso.log
+
+# Definir el nombre del servicio Oracle a testear
+ENV LISTA_HOST=HOST:PUERTO/INSTANCIA
+ENV TIEMPO_PAUSA="3"
+
+COPY log /var/log
+
+COPY proceso/app/app.py ./app/app.py
+COPY proceso/app/data_processor.py ./app/data_processor.py
+
+CMD [ "streamlit", "run", "/home/proceso/app/app.py", "--server.enableXsrfProtection=false", "--server.enableCORS=false", "--server.port=8502", "--server.address=0.0.0.0", "--browser.gatherUsageStats=false"]

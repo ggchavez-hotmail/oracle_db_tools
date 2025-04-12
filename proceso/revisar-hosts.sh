@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#Ejecución stremlit
-streamlit run /home/proceso/app/app.py --server.enableXsrfProtection=false --server.enableCORS=false --server.port="${APP_PORT}" --server.address=0.0.0.0 --server.baseUrlPath="${BASEURLPATH}" --browser.gatherUsageStats=false &
-
 #calcular el maximo para generar
 MAX_SIZE=$((MAX_SIZE_MB * 1024 * 1024))
 

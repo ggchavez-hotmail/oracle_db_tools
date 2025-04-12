@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM python:3.11-slim
 
 #Instalar herramientas necesarias
 RUN apt update -y && \
@@ -20,7 +20,8 @@ RUN curl -o oracleclientlite.zip https://download.oracle.com/otn_software/linux/
 #Eliminar herramientas que no se utilizan
 RUN apt remove --purge -y \
     unzip \
-    curl 
+    curl && \
+    apt autoremove -y
 
 #Copiar carpetas necesarias para que funcione TNSPING
 WORKDIR /opt/oracle/instantclient_23_7
@@ -38,8 +39,20 @@ WORKDIR /home/proceso
 
 COPY proceso .
 
+RUN pip install --no-cache-dir -r app/requirements.txt 
+
+# Exponer el puerto usado por Streamlit
+ENV APP_PORT=8501
+EXPOSE $APP_PORT
+
+ENV LOG_FILE=/var/log/proceso.log
+ENV BASEURLPATH=informetnsping
+
+ENV MAX_SIZE_MB=100
+ENV PORCENT_KEEP_LINE_SIZE=10
+
 # Definir el nombre del servicio Oracle a testear
 ENV LISTA_HOST=HOST:PUERTO/INSTANCIA
-ENV TIEMPO_PAUSA="1"
+ENV TIEMPO_PAUSA="3"
 
 CMD [ "sh", "test-host.sh"]
